@@ -13,12 +13,13 @@ parser = argparse.ArgumentParser(
 # Data and model checkpoints directories
 parser.add_argument('--data_dir', type=str, default='data/tinyshakespeare',
                     help='data directory containing input.txt with training examples')
-parser.add_argument('--save_dir', type=str, default='save',
+parser.add_argument('--save_dir', type=str, default='save/tinyshakespeare',
                     help='directory to store checkpointed models')
 parser.add_argument('--log_dir', type=str, default='logs',
                     help='directory to store tensorboard logs')
-parser.add_argument('--save_every', type=int, default=1000,
-                    help='Save frequency. Number of passes between checkpoints of the model.')
+parser.add_argument('--print_every',type=int,default=10,
+                    help='Print frequency. Number of passes between output statements.')
+parser.add_argument('--save_every', type=int, default=1000, help='Save frequency. Number of passes between checkpoints of the model.')
 parser.add_argument('--init_from', type=str, default=None,
                     help="""continue training from saved model at this path (usually "save").
                         Path must contain files saved by previous training process:
@@ -60,6 +61,7 @@ args = parser.parse_args()
 import tensorflow as tf
 from utils import TextLoader
 from model import Model
+import os, codecs, datetime
 
 def train(args):
     data_loader = TextLoader(args.data_dir, args.batch_size, args.seq_length)
@@ -126,10 +128,12 @@ def train(args):
                 writer.add_summary(summ, e * data_loader.num_batches + b)
 
                 end = time.time()
-                print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}"
-                      .format(e * data_loader.num_batches + b,
-                              args.num_epochs * data_loader.num_batches,
-                              e, train_loss, end - start))
+                
+                if (e * data_loader.num_batches + b) % args.print_every == 0:
+                    s = "%d/%d (epoch %d/%d), train_loss = %.3f, time/batch = %.3f, remaining = %s" % (e * data_loader.num_batches + b, args.num_epochs * data_loader.num_batches, e+1, args.num_epochs, train_loss, end - start,str(datetime.timedelta(seconds=(args.num_epochs * data_loader.num_batches) - (e * data_loader.num_batches + b))*(end - start))[:-7])
+                    print(s)
+                    with codecs.open(os.path.join(args.save_dir,'lastoutput.txt'),'w') as f:
+                        f.write(s)
                 if (e * data_loader.num_batches + b) % args.save_every == 0\
                         or (e == args.num_epochs-1 and
                             b == data_loader.num_batches-1):
