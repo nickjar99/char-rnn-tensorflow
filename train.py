@@ -128,7 +128,7 @@ def train(args):
 
     model = Model(args)
     config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
+    #config.gpu_options.allow_growth = True
     with tf.Session(config=config) as sess:
         # instrument for tensorboard
         summaries = tf.summary.merge_all()
