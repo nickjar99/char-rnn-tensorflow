@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(
 # Data and model checkpoints directories
 parser.add_argument('--data_dir', type=str, default='data/tinyshakespeare',
                     help='data directory containing input.txt with training examples')
-parser.add_argument('--save_dir', type=str, default='save',
+parser.add_argument('--save_dir', type=str, default='save/tinyshakespeare',
                     help='directory to store checkpointed models')
 parser.add_argument('--log_dir', type=str, default='logs',
                     help='directory to store tensorboard logs')
