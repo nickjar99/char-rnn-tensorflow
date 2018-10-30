@@ -160,10 +160,12 @@ def train(args):
                 writer.add_summary(summ, e * data_loader.num_batches + b)
 
                 end = time.time()
-                print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}, remaining = {}"
-                      .format(e * data_loader.num_batches + b,
-                              args.num_epochs * data_loader.num_batches,
-                              e, train_loss, end - start,str(datetime.timedelta(seconds=(args.num_epochs * data_loader.num_batches) - (e * data_loader.num_batches + b))*(end - start))[:-7]))
+                if (e * data_loader.num_batches + b) % args.print_every == 0:
+                    tDelta = str(datetime.timedelta(seconds=(args.num_epochs * data_loader.num_batches) - (e * data_loader.num_batches + b))*(end - start))[:-7]
+                    print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}, remaining = {}"
+                          .format(e * data_loader.num_batches + b,
+                                  args.num_epochs * data_loader.num_batches,
+                                  e, train_loss, end - start, tDelta))
                 if (e * data_loader.num_batches + b) % args.save_every == 0 \
                         or (e == args.num_epochs-1 and
                             b == data_loader.num_batches-1):
